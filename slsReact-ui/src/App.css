@@ -1,69 +1,65 @@
-/* .App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-} */
-
+/* Center the entire app in the middle of the screen */
 .App {
-  text-align: center;
-  background-color: azure;
-}
-
-.search-bar-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 50px;
+  height: 100vh; /* Full screen height */
+  background-color: rgb(255, 255, 255);
 }
 
-input {
-  width: 300px;
+/* Center the search bar container */
+.search-bar-container {
+  /*display: flex;*/
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #333;
+  border-radius: 30px;
   padding: 10px;
-  font-size: 16px;
-  margin-right: 10px;
+  width: 700px; /* Adjusted to fit the icons */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: white;
 }
 
-button {
-  background: beige;
-  border: 12px;
+/* Remove search input field, only keep the icons */
+.search-bar-container input {
+  border: none;
+  outline: none;
+  font-size: 16px;
+  flex-grow: 1;
+  margin-right: 10px;
+  padding-left: 10px;
+}
+
+/* Style for buttons inside the search bar */
+.search-bar-container button {
+  background: none;
+  border: none;
   cursor: pointer;
   padding: 10px;
   font-size: 20px;
 }
 
-.fa {
-  margin-right: 10px;
+/* Icon styling */
+.search-bar-container .fa {
+  color: #666;
+  transition: color 0.3s ease;
+}
+
+.search-bar-container .fa:hover {
+  color: #000;
+}
+
+/* Webcam container for when the camera is active */
+.camera-container {
+  margin-top: 20px;
+  justify-content: center;
+  border: 2px solid #ddd;
+  padding: 10px;
+  background-color: none;
+}
+
+/* Styling for video feed */
+video {
+  width: 100%;
+  height: 50%;
 }
