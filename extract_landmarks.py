@@ -15,6 +15,7 @@ data = []
 # Start video capture
 cap = cv2.VideoCapture(0)
 
+symbol = input("Enter the symbol you want to capture (a-z and numbers): ").lower()
 print("Press 'c' to capture landmarks, 'q' to quit.")
 
 
@@ -66,5 +67,5 @@ for row in data:
 
 
 data_df = pd.DataFrame(new_data)
-data_df.to_csv('asl_landmarks.csv', index=False)
-print("Data saved to asl_landmarks.csv")
+data_df.to_csv(f'landmarks/{symbol}_asl_landmarks.csv', index=False)
+print(f"Data saved to landmarks/{symbol}_asl_landmarks.csv")

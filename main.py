@@ -2,18 +2,26 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import pandas as pd
+import os
 from utilities import full_normalization
 
 # load csv data so that we can use it to choose the best match
-refrence_landmarks = pd.read_csv("asl_landmarks.csv")
-refrence_landmarks_data = []
-for row in refrence_landmarks.values:
-    current_refrence = []
-    for point in row:
-        points = point.split(",")
-        current_refrence.append([float(i) for i in points])
+current_landmarks = os.listdir("landmarks")
+refrence_landmarks_list = []
+for landmark_file_name in current_landmarks:
+    refrence_landmarks_list.append([landmark_file_name, pd.read_csv(f"landmarks/{landmark_file_name}")])
+
+print(refrence_landmarks_list)
+
+# refrence_landmarks = pd.read_csv("asl_landmarks.csv")
+# refrence_landmarks_data = []
+# for row in refrence_landmarks.values:
+#     current_refrence = []
+#     for point in row:
+#         points = point.split(",")
+#         current_refrence.append([float(i) for i in points])
     
-    refrence_landmarks_data.append(current_refrence)
+#     refrence_landmarks_data.append(current_refrence)
 
 
 # Initialize MediaPipe Hands
@@ -53,16 +61,26 @@ while True:
             # Normalize landmarks
             landmarks = full_normalization(landmarks)
 
-            for refrence_landmark in refrence_landmarks_data:
-                refrence_landmark = full_normalization(refrence_landmark)
-                
-                # Calculate the Euclidean distance between landmarks and reference landmarks
+            # Compare the landmarks with the reference landmarks
+            for _, refrence_landmarks in refrence_landmarks_list:
+                refrence_landmarks_data = [] 
+                for row in refrence_landmarks.values:
+                    current_refrence = []
+                    for point in row:
+                        current_refrence.append([float(i) for i in point.split(",")])
 
-                distances = np.linalg.norm(landmarks - refrence_landmark, axis=1)
-                current_match_accuracy = np.sum(distances)
-                
-                if current_match_accuracy < 5:
-                    print("yess that is a four", current_match_accuracy)
+                refrence_landmarks_data.append(current_refrence)
+
+                for refrence_landmark in refrence_landmarks_data:
+                    refrence_landmark = full_normalization(refrence_landmark)
+                    
+                    # Calculate the Euclidean distance between landmarks and reference landmarks
+
+                    distances = np.linalg.norm(landmarks - refrence_landmark, axis=1)
+                    current_match_accuracy = np.sum(distances)
+                    
+                    if current_match_accuracy < 4:
+                        print("yess that is a four", current_match_accuracy)
 
 
     # Display the resulting frame
