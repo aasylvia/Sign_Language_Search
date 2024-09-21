@@ -1,5 +1,18 @@
 import cv2
 import mediapipe as mp
+import numpy as np
+import pandas as pd
+
+# load csv data so that we can use it to choose the best match
+refrence_landmarks = pd.read_csv("asl_landmarks.csv")
+refrence_landmarks_data = []
+for row in refrence_landmarks.values:
+    current_refrence = []
+    for point in row:
+        current_refrence.append([float(i) for i in point[1:-1].split(",")])
+    
+    refrence_landmarks_data.append(current_refrence)
+
 
 # Initialize MediaPipe Hands
 mp_hands = mp.solutions.hands
@@ -31,6 +44,19 @@ while True:
     if result.multi_hand_landmarks:
         for hand_landmarks in result.multi_hand_landmarks:
             mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
+
+            landmarks = np.array([(lm.x, lm.y, lm.z) for lm in hand_landmarks.landmark])
+
+            for refrence_landmark in refrence_landmarks_data:
+                refrence_landmark = np.array(refrence_landmark)
+                
+                # Calculate the Euclidean distance between landmarks and reference landmarks
+                distances = np.linalg.norm(landmarks - refrence_landmark, axis=1)
+                current_match_accuracy = np.sum(distances)
+                
+                if current_match_accuracy < 0.5:
+                    print("yess that is a four", current_match_accuracy)
+
 
     # Display the resulting frame
     cv2.imshow('Camera Feed', frame)
