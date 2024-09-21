@@ -32,6 +32,7 @@ if not cap.isOpened():
 while True:
     # Capture frame-by-frame
     ret, frame = cap.read()
+    frame = cv2.flip(frame, 1)
 
     if not ret:
         print("Error: Could not read frame.")
@@ -54,13 +55,19 @@ while True:
             landmarks = full_normalization(landmarks)
 
             for refrence_landmark in refrence_landmarks_data:
-                refrence_landmark = np.array(refrence_landmark)
+                refrence_landmark = full_normalization(refrence_landmark)
                 
                 # Calculate the Euclidean distance between landmarks and reference landmarks
+                # print(landmarks.shape, refrence_landmark.shape)
                 distances = np.linalg.norm(landmarks - refrence_landmark, axis=1)
+                distances **= 2
+                # for x, y in zip(landmarks, refrence_landmark):
+                    # print(x, y)
+                # raise Exception()
+                # print(distances)
                 current_match_accuracy = np.sum(distances)
                 
-                if current_match_accuracy < 15:
+                if current_match_accuracy < 0.5:
                     print("yess that is a four", current_match_accuracy)
 
 

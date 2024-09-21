@@ -33,5 +33,5 @@ def full_normalization(landmarks):
     # Step 2: Scale based on hand size (wrist to middle fingertip distance)
     scaled_landmarks = scale_landmarks(normalized_landmarks)
     
-    return scaled_landmarks
+    return np.array(scaled_landmarks)
 
