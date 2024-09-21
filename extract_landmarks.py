@@ -30,22 +30,24 @@ while cap.isOpened():
         for hand_landmarks in results.multi_hand_landmarks:
             # Draw landmarks
             mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-            
-            # Extract landmark coordinates
-            landmarks = [(lm.x, lm.y, lm.z) for lm in hand_landmarks.landmark]
-
-            # Normalize landmarks
-            landmarks = full_normalization(landmarks)
-            data.append(landmarks)
-
-    frame = cv2.circle(frame, (frame.shape[1] // 2, frame.shape[0] // 2), 130, (0, 0, 0), 5)
+    
     cv2.imshow('ASL Data Collection', frame)
 
     # Capture landmarks on 'c' key press
     if cv2.waitKey(5) & 0xFF == ord('c'):
         # Optionally, you can save the current frame with landmarks drawn
         print("Capturing landmarks...")
-    
+
+        if results.multi_hand_landmarks:
+            for hand_landmarks in results.multi_hand_landmarks:
+                
+                # Extract landmark coordinates
+                landmarks = [(lm.x, lm.y, lm.z) for lm in hand_landmarks.landmark]
+
+                # Normalize landmarks
+                landmarks = full_normalization(landmarks)
+                data.append(landmarks)
+
     # Quit on 'q' key press
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
@@ -54,10 +56,15 @@ while cap.isOpened():
 cap.release()
 cv2.destroyAllWindows()
 
-# Save collected data
-# for data in data:
-    # print([[float(j) for j in i] for i in data])
+new_data = []
+for row in data:
+    current_row = []
+    for column in row:
+        current_row.append(f"{float(column[0])},{float(column[1])},{float(column[2])}")
+    
+    new_data.append(current_row)
 
-data_df = pd.DataFrame(data)
+
+data_df = pd.DataFrame(new_data)
 data_df.to_csv('asl_landmarks.csv', index=False)
 print("Data saved to asl_landmarks.csv")

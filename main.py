@@ -10,9 +10,8 @@ refrence_landmarks_data = []
 for row in refrence_landmarks.values:
     current_refrence = []
     for point in row:
-        points = point[1:-1].split(",")
-        current_refrence.append([float(i[12:-1]) for i in points])
-        # current_refrence.append([float(i) for i in point[:-2].split(",")])
+        points = point.split(",")
+        current_refrence.append([float(i) for i in points])
     
     refrence_landmarks_data.append(current_refrence)
 
@@ -32,7 +31,7 @@ if not cap.isOpened():
 while True:
     # Capture frame-by-frame
     ret, frame = cap.read()
-    frame = cv2.flip(frame, 1)
+    # frame = cv2.flip(frame, 1)
 
     if not ret:
         print("Error: Could not read frame.")
@@ -58,16 +57,11 @@ while True:
                 refrence_landmark = full_normalization(refrence_landmark)
                 
                 # Calculate the Euclidean distance between landmarks and reference landmarks
-                # print(landmarks.shape, refrence_landmark.shape)
+
                 distances = np.linalg.norm(landmarks - refrence_landmark, axis=1)
-                distances **= 2
-                # for x, y in zip(landmarks, refrence_landmark):
-                    # print(x, y)
-                # raise Exception()
-                # print(distances)
                 current_match_accuracy = np.sum(distances)
                 
-                if current_match_accuracy < 0.5:
+                if current_match_accuracy < 5:
                     print("yess that is a four", current_match_accuracy)
 
 
