@@ -2,6 +2,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import pandas as pd
+from utilities import full_normalization
 
 # load csv data so that we can use it to choose the best match
 refrence_landmarks = pd.read_csv("asl_landmarks.csv")
@@ -9,7 +10,9 @@ refrence_landmarks_data = []
 for row in refrence_landmarks.values:
     current_refrence = []
     for point in row:
-        current_refrence.append([float(i) for i in point[1:-1].split(",")])
+        points = point[1:-1].split(",")
+        current_refrence.append([float(i[12:-1]) for i in points])
+        # current_refrence.append([float(i) for i in point[:-2].split(",")])
     
     refrence_landmarks_data.append(current_refrence)
 
@@ -46,6 +49,9 @@ while True:
             mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
             landmarks = np.array([(lm.x, lm.y, lm.z) for lm in hand_landmarks.landmark])
+            
+            # Normalize landmarks
+            landmarks = full_normalization(landmarks)
 
             for refrence_landmark in refrence_landmarks_data:
                 refrence_landmark = np.array(refrence_landmark)
@@ -54,7 +60,7 @@ while True:
                 distances = np.linalg.norm(landmarks - refrence_landmark, axis=1)
                 current_match_accuracy = np.sum(distances)
                 
-                if current_match_accuracy < 0.5:
+                if current_match_accuracy < 15:
                     print("yess that is a four", current_match_accuracy)
 
 

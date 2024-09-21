@@ -1,6 +1,8 @@
 import cv2
 import mediapipe as mp
 import pandas as pd
+import numpy as np
+from utilities import full_normalization
 
 # Initialize MediaPipe components
 mp_hands = mp.solutions.hands
@@ -14,6 +16,7 @@ data = []
 cap = cv2.VideoCapture(0)
 
 print("Press 'c' to capture landmarks, 'q' to quit.")
+
 
 while cap.isOpened():
     success, frame = cap.read()
@@ -30,6 +33,9 @@ while cap.isOpened():
             
             # Extract landmark coordinates
             landmarks = [(lm.x, lm.y, lm.z) for lm in hand_landmarks.landmark]
+
+            # Normalize landmarks
+            landmarks = full_normalization(landmarks)
             data.append(landmarks)
 
     frame = cv2.circle(frame, (frame.shape[1] // 2, frame.shape[0] // 2), 130, (0, 0, 0), 5)
@@ -49,6 +55,9 @@ cap.release()
 cv2.destroyAllWindows()
 
 # Save collected data
+# for data in data:
+    # print([[float(j) for j in i] for i in data])
+
 data_df = pd.DataFrame(data)
 data_df.to_csv('asl_landmarks.csv', index=False)
 print("Data saved to asl_landmarks.csv")
