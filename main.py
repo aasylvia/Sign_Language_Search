@@ -54,7 +54,7 @@ while True:
             landmarks = full_normalization(landmarks)
 
             # Find the best match
-            best_match, best_match_score = "", 0 
+            best_match, best_match_score = "", float("inf") 
 
             # Compare the landmarks with the reference landmarks
             for landmark_file_name, refrence_landmarks in refrence_landmarks_list:
@@ -74,12 +74,11 @@ while True:
                     distances = np.linalg.norm(landmarks - refrence_landmark, axis=1)
                     current_match_accuracy = np.sum(distances)
 
-                    if current_match_accuracy < 7:
-                        if current_match_accuracy > best_match_score:
+                    if current_match_accuracy < 5:
+                        if current_match_accuracy < best_match_score:
                             best_match = landmark_file_name.split("_")[0]
                             best_match_score = current_match_accuracy
-                    
-
+            
             print(best_match, best_match_score)
             
             if best_match != prev_symbol:
