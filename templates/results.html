@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gesture-Based Google Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, p {
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background-color: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        a {
+            text-decoration: none;
+            color: #1a73e8;
+            font-size: 18px;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        p {
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gesture-Based Google Search</h1>
+    <p>Recognized Word: <span id="recognized-word">None</span></p>
+
+    <button onclick="resetWord()">Reset Word</button>
+
+    <ul id="results"></ul>
+
+    <script>
+        // Update recognized word and display search results
+        function updateSearchResults(data) {
+            const recognizedWordElem = document.getElementById('recognized-word');
+            recognizedWordElem.textContent = data.recognized_word || "None";
+
+            const resultsList = document.getElementById('results');
+            resultsList.innerHTML = ''; // Clear previous results
+
+            if (data.search_results && data.search_results.length > 0) {
+                data.search_results.forEach(result => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `
+                        <a href="${result.link}" target="_blank">${result.title}</a>
+                        <p>${result.snippet}</p>
+                    `;
+                    resultsList.appendChild(listItem);
+                });
+            } else {
+                const noResults = document.createElement('li');
+                noResults.innerHTML = 'No results found.';
+                resultsList.appendChild(noResults);
+            }
+        }
+
+        // Simulate receiving a recognized letter from backend (for testing purposes)
+        function recognizeLetter(letter) {
+            fetch('/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ letter })
+            })
+            .then(response => response.json())
+            .then(updateSearchResults)
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Reset the recognized word
+        function resetWord() {
+            fetch('/reset', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('recognized-word').textContent = "None";
+                document.getElementById('results').innerHTML = '';
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Simulate gesture recognition for testing
+        setInterval(() => {
+            const letters = ['A', 'B', 'C', 'D', 'E'];
+            const randomLetter = letters[Math.floor(Math.random() * letters.length)];
+            recognizeLetter(randomLetter);
+        }, 5000);  // Simulate recognizing a letter every 5 seconds for testing purposes
+    </script>
+</body>
+</html>

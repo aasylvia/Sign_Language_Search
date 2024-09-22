@@ -5,27 +5,18 @@ import pandas as pd
 import os
 import time
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
 from utilities import full_normalization
 
 # Initialize the Google Custom Search API
+# Initialize the Google Custom Search API
 def search_google(query):
-    api_key = os.getenv("GOOGLE_API_KEY")  # Use environment variables for sensitive information
-    cse_id = os.getenv("GOOGLE_CSE_ID")
-    
-    if not api_key or not cse_id:
-        print("Error: Missing API key or Search Engine ID")
-        return
-
+    api_key = "AIzaSyDPNZC7JFRk_30vsugiHTxy--ZeiXnyOI8"  # Replace with your actual API key
+    cse_id = "f71bdbf3a61d74d4f"  # Replace with your search engine ID
     service = build("customsearch", "v1", developerKey=api_key)
-
-    try:
-        # Perform the search
-        result = service.cse().list(q=query, cx=cse_id).execute()
-        return result
-    except HttpError as err:
-        print(f"HTTP Error: {err}")
-        return None
+    
+    # Perform the search
+    result = service.cse().list(q=query, cx=cse_id).execute()
+    return result
 
 # Load CSV reference data for landmarks (letters)
 current_landmarks = os.listdir("landmarks")
@@ -56,9 +47,6 @@ while True:
     if not ret:
         print("Error: Could not read frame.")
         break
-
-    # Flip the frame horizontally (mirror effect)
-    frame = cv2.flip(frame, 1)
 
     # Convert the frame to RGB
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -108,4 +96,30 @@ while True:
             frame = cv2.putText(frame, word_so_far, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
 
     # After 3 seconds of inactivity or when the word reaches a certain length, trigger the search
-    if time.time() - start > 3 and len(word_so_far) >
+    if time.time() - start > 3 and len(word_so_far) > 0:
+        print(f"Searching Google for: {word_so_far}")
+        
+        # Perform the Google search with the word_so_far as the query
+        search_results = search_google(word_so_far)
+        
+        # Display the search results
+        if 'items' in search_results:
+            for index, item in enumerate(search_results['items']):
+                print(f"{index+1}. {item['title']}")
+                print(f"Link: {item['link']}\n")
+        
+        # Reset word_so_far and timer after search
+        word_so_far = ""
+        start = time.time()  # Reset the start time after the search is performed
+
+    # Display the resulting frame
+    cv2.imshow('Camera Feed', frame)
+
+    # Break the loop on 'q' key press
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+# When everything is done, release the capture
+cap.release()
+cv2.destroyAllWindows()
+
