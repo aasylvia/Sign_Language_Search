@@ -1,9 +1,7 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import '@fortawesome/fontawesome-free/css/all.min.css'; // Font Awesome for icons
 import './App.css'; // Import your CSS
-import '@mediapipe/hands';
-import '@mediapipe/camera_utils';
+import "@mediapipe/hands"; // Import MediaPipe Hands
 
 function App() {
   const [query, setQuery] = useState(''); // Search query state
